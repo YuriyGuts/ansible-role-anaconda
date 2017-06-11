@@ -1,0 +1,85 @@
+---
+- name: Check if Anaconda installer already exists
+  stat:
+    path: '{{ anaconda_downloaded_installer }}'
+  register: installer_already_downloaded
+
+- name: Download Anaconda installer
+  when: not installer_already_downloaded.stat.exists
+  get_url:
+    url: '{{ anaconda_installer_url}}'
+    dest: '{{ anaconda_downloaded_installer }}'
+    timeout: '{{ anaconda_download_timeout_sec }}'
+    checksum: '{{ anaconda_installer_checksum }}'
+    mode: '0755'
+
+- name: Install Anaconda
+  command: '{{ anaconda_downloaded_installer }} -b -p {{ anaconda_home_dir }}'
+  args:
+    creates: '{{ anaconda_home_dir }}'
+
+- name: Make Anaconda the default Python for the current user
+  when: anaconda_make_default_python
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/.bashrc'
+    state: present
+    line: '{{ item }}'
+    insertbefore: BOF
+  with_items:
+    - 'export PATH=$ANACONDA_HOME/bin:$PATH'
+    - 'export ANACONDA_HOME={{ anaconda_home_dir }}'
+
+- name: Update conda config
+  template:
+    src: condarc.j2
+    dest: '{{ anaconda_config_filename }}'
+    force: yes
+    mode: 0644
+
+- name: Update conda packages
+  when: anaconda_update_packages
+  command: '{{ anaconda_conda_executable }} update -y --all'
+  register: conda_update_result
+  changed_when: not (conda_update_result.stdout | search('All requested packages already installed'))
+
+- name: Install additional conda packages
+  when: anaconda_install_packages != ''
+  command: '{{ anaconda_conda_executable }} install -y {{ anaconda_install_packages }}'
+  register: conda_install_result
+  changed_when: not (conda_install_result.stdout | search('All requested packages already installed'))
+
+- name: Upgrade core libraries that are known to cause issues with certain packages
+  when: anaconda_apply_compatibility_updates
+  block:
+    - name: Add anaconda to the list of channels
+      command: '{{ anaconda_conda_executable }} config --append channels anaconda'
+      changed_when: no
+    - name: Update libgcc for Anaconda
+      command: '{{ anaconda_conda_executable }} install -y libgcc'
+      register: compatibility_update_result
+      changed_when: not (compatibility_update_result.stdout | search('All requested packages already installed'))
+
+- name: Upgrade setuptools
+  when: anaconda_apply_compatibility_updates
+  pip:
+    name: setuptools
+    state: latest
+    extra_args: --ignore-installed
+  retries: 3
+  delay: 1
+
+- name: Delete Anaconda installer
+  when: anaconda_cleanup
+  file:
+    path: '{{ anaconda_downloaded_installer }}'
+    state: absent
+
+- name: Check Python version
+  command: 'python --version'
+  register: python_version_output
+  changed_when: no
+
+- name: Print Python version
+  debug:
+    var: python_version_output.stderr
+  changed_when: no

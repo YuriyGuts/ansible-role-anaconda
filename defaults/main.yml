@@ -1,0 +1,48 @@
+---
+# The server to download Anaconda from.
+anaconda_download_mirror: 'http://repo.continuum.io/archive'
+
+# Download timeout (seconds).
+anaconda_download_timeout_sec: 600
+
+# Anaconda Python version (2 or 3).
+anaconda_python_version: 3
+
+# Anaconda version.
+anaconda_version: '4.4.0'
+
+# Download package checksums.
+anaconda_checksums:
+  Anaconda2-4.4.0-Linux-x86_64.sh: sha256:2d30b91ed4d215b6b4a15162a3389e9057b15445a0c02da71bd7bd272e7b824e
+  Anaconda3-4.4.0-Linux-x86_64.sh: sha256:3301b37e402f3ff3df216fe0458f1e6a4ccbb7e67b4d626eae9651de5ea3ab63
+
+# Anaconda home directory.
+anaconda_home_dir: '{{ ansible_env.HOME }}/anaconda'
+
+# Make this Anaconda installation the default Python for the current user.
+anaconda_make_default_python: yes
+
+# Update anaconda packages upon installation.
+anaconda_update_packages: no
+
+# Patch core libraries that are known to cause issues with some packages.
+anaconda_apply_compatibility_updates: yes
+
+# Conda packages to install after Anaconda in installed.
+# Specify the list of packages the same way as you would for the 'conda install' command.
+# Example: 'joblib nltk jupyter'.
+anaconda_install_packages: ''
+
+# Remove the installer once we're done.
+anaconda_cleanup: no
+
+# Channels to add to conda.
+anaconda_add_channels:
+  - anaconda
+
+# Allow updating conda and conda_env.
+anaconda_enable_self_update: no
+
+# Use channel priority introduced since Anaconda 4.1.0.
+# Disabling this will lead to the latest package being installed regardless of where it comes from (pre-4.1.0 behavior).
+anaconda_enable_channel_priority: no
