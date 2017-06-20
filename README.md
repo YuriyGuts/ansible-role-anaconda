@@ -1,5 +1,5 @@
-Role Name
-=========
+yuriyguts.anaconda
+==================
 
 An Ansible role to install Anaconda on Linux, along with additional conda packages of your choice.
 

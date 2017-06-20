@@ -64,6 +64,7 @@
   pip:
     name: setuptools
     state: latest
+    executable: '{{ anaconda_pip_executable }}'
     extra_args: --ignore-installed
   retries: 3
   delay: 1

@@ -1,7 +1,6 @@
 channels:
-  - default
-{% for package in anaconda_add_channels %}
-  - {{ package }}
+{% for channel in anaconda_use_channels %}
+  - {{ channel }}
 {% endfor %}
 channel_priority: {{ anaconda_enable_channel_priority | bool | lower }}
 auto_update_conda: {{ anaconda_enable_self_update | bool | lower }}

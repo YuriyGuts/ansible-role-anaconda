@@ -7,3 +7,4 @@ anaconda_installer_checksum: '{{ anaconda_checksums[anaconda_installer_filename]
 anaconda_downloaded_installer: '/tmp/{{ anaconda_name }}.sh'
 anaconda_conda_executable: '{{ anaconda_home_dir }}/bin/conda'
 anaconda_config_filename: '{{ ansible_env.HOME }}/.condarc'
+anaconda_pip_executable: '{{ anaconda_home_dir }}/bin/pip'

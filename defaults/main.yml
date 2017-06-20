@@ -36,9 +36,9 @@ anaconda_install_packages: ''
 # Remove the installer once we're done.
 anaconda_cleanup: no
 
-# Channels to add to conda.
-anaconda_add_channels:
-  - anaconda
+# Channels to use in conda.
+anaconda_use_channels:
+  - default
 
 # Allow updating conda and conda_env.
 anaconda_enable_self_update: no
